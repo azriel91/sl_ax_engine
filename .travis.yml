@@ -1,0 +1,38 @@
+sudo: required
+
+language: cpp
+compiler:
+- gcc
+- clang
+
+before_install:
+- git checkout $TRAVIS_BRANCH
+
+- if [ $(bii-support/travis/git/is_last_commit_travis.sh) = "true" ] ; then exit 0 ; fi
+- bii-support/travis/git/configure.sh
+
+install:
+- bii-support/travis/install/all-headless.sh
+
+- export TRAVIS_CXX=$CXX
+
+script:
+- bii-support/linux/build/default.sh
+- valgrind --leak-check=full "bin/${BII_USER}_${BLOCK_NAME}_test_main"
+
+after_success:
+- bii-support/travis/publish/biicode.sh
+
+env:
+  global:
+  - USER_EMAIL=azriel91@gmail.com
+  - USER_NAME="azriel"
+  - BLOCK_NAME=sl_ax_engine
+  - BII_USER=azriel
+  # BII_PASSWORD
+  - secure: "t8RWJZxBmOPVEpSnzNjceIQK2GJdJ93C2tZrFOIWT9UnyncG8+8gYkrEXwlvWjX16ybjXPIvjr/lCn34mV9KkXd6dtnET875AN0aOYS08njizLjsv1lNRZMDsHKH/0/DRlWCM3A5/xeAW/Aw8U7BWHj5XYGpwR0JvO3PrgMexWb7YBauB2f0MPJL+r1lOOOgNcUcKZWSOH/Ayja2fQAAotW4sh6kyGQGzaQLKXVjguSS9cFSNJLNbIQy1ZUqrN5dzq1Whg7FEwJbik6ZVV0cTVf1uIm9CEpwJ/6nRKetFNGyVOG1/OgKffTrvNrLcSObnPYNcB+AqhtX0EAbBYRx6TDz1xrREDFmqRRhAvRFIzuLfgqx3HxhnYuQamo9Z6b6MpwfqKLO/YCfhHtoW1PIJ0Lx+c+81YIK0iPttwkV3IA9UZSpO2h+5vQehSFhCUpXqh6822k0HDiJ5KNKfMTBcg7SGwkU2lenBE8OhManZBa42OkZ9aekPCtVFQUo3SHmk0rKBkJaD1sHe9OGXQT3E2c7V42/ONezEEkdshCHX6iezhOVlGP6JoaknugdB4mq1u6VBagnUIzHrmyllDDQoE0xEom+3Jw8OOCvLHHqA+kA7dv76CGZmKwdLwxjtR5Up2nIlkfeeI6T/DWXDqpfP1Qo+68wSFV1ACWZE4tjNb8="
+  # GITHUB_TOKEN
+  - secure: "fXQkUAI/G6YFQhteMhpmdERFr0lvXqAA/18iWlVJAKSL9X2+3NhcAsPJ3AxmkPvWXhaNeTcQ3mLuGuByW/OqPYGFQfi+/puvVhuSknoMH5l+0HJD/Bz7zZUMw37jG9vikOZyyF1R43YjxUJ4dsgp+D4OaxVH7QvsWrnb6v11WA7k8rsGyd2XidbA0ESjfWRf/6uWthqaxk6AX4+dxEaNs9PTruFHyvP9z6qKGEVu+tpVa/qH3UZFKN/hVtzT5s5TYzqe3N8B1K4SiHQn1Ove34YQdk0fGy6FLrY0iWZ52cKk7CRf6rp0uBogFLD6P0JedZTQONoZoq70TowjLKYMnamKDB/MSQzwb92dYXeM4u3yTvMvo2WMTe02qBowgiu9/zQqjVHk7VXGMLdYtzJ3Tyn5B5CuUpprKQMfT7WQeTxgul66LLCVDZtVJTbVOrrigEzwrZBqO4DB8nSNtEdmYSiUIEeDRcPV+QFomf34AoPKwCD75QAOJ7Tx0E1gWOSZCErkMG6G7O/PmqP4aAH5qibi2rR6UdsciZGtTsSFWo2BbSSrui39OB7+RdbsOR/BT5fEAbvWnZc2XupcirNmHzfSsNUHbJPm5w/BHPI2Ztlyd4r6JUOSGwD4w5k9zd7Cgg6QCCX/0v9YVmhyb4GkvCu1jVQBFGSmHpxgOg+3nsw="
+  matrix:
+  - BUILD_SHARED_LIBS=OFF
+  - BUILD_SHARED_LIBS=ON
