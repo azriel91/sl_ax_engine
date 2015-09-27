@@ -18,7 +18,6 @@ install:
 
 script:
 - bii-support/linux/build/default.sh
-- valgrind --leak-check=full "bin/${BII_USER}_${BLOCK_NAME}_test_main"
 
 after_success:
 - bii-support/travis/publish/biicode.sh
