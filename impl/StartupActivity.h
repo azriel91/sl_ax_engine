@@ -18,8 +18,8 @@
 
 =============================================================================*/
 
-#ifndef __SL_AUTEXOUSIOUS_ENGINE__AUTEXOUSIOUSAPPLICATION_H
-#define __SL_AUTEXOUSIOUS_ENGINE__AUTEXOUSIOUSAPPLICATION_H
+#ifndef __SL_AX_ENGINE__STARTUPACTIVITY_H
+#define __SL_AX_ENGINE__STARTUPACTIVITY_H
 
 #include <azriel/sl_core_application/Activity.h>
 
@@ -41,4 +41,4 @@ public:
 } /* namespace ax */
 } /* namespace sl */
 
-#endif /* __SL_AUTEXOUSIOUS_ENGINE__AUTEXOUSIOUSAPPLICATION_H */
+#endif /* __SL_AX_ENGINE__STARTUPACTIVITY_H */
