@@ -20,6 +20,9 @@
 
 #include <memory>
 #include <stack>
+#include <cstdio>
+
+#include <azriel/sl_core_application/ActivityRegistration.h>
 
 #include "AutexousiousService.h"
 #include "impl/StartupActivity.h"
@@ -28,25 +31,43 @@ namespace sl {
 namespace ax {
 namespace engine {
 
-AutexousiousService::AutexousiousService() :
-		app(std::unique_ptr<sl::core::application::Application>(createApplication())) {
+AutexousiousService::AutexousiousService(
+		std::shared_ptr<ServiceTracker<ActivityRegistration> > activityRegistrationTracker) :
+		activityRegistrationTracker(activityRegistrationTracker) {
 }
 
 AutexousiousService::~AutexousiousService() {
 }
 
-const int AutexousiousService::runApplication() {
-	return this->app->run();
-}
+const int AutexousiousService::runApplication(const std::string activityName) const {
+	this->activityRegistrationTracker->Open();
 
-std::unique_ptr<sl::core::application::Application> AutexousiousService::createApplication() {
-	sl::core::application::ActivityPointer startupActivity(new sl::ax::engine::StartupActivity());
+	auto activityRegistrations = this->activityRegistrationTracker->GetServices();
 
-	std::shared_ptr<sl::core::application::ActivityStack> activityStack(new sl::core::application::ActivityStack());
-	activityStack->push(startupActivity);
+	sl::core::application::ActivityPointer activityPtr;
+	for (auto activityRegistration : activityRegistrations) {
 
-	auto app = new sl::core::application::Application(activityStack);
-	return std::unique_ptr<sl::core::application::Application>(app);
+		if (activityName.compare(activityRegistration->getName()) == 0) {
+			activityPtr = activityRegistration->getActivity();
+		}
+	}
+	this->activityRegistrationTracker->Close();
+
+	if (activityPtr) {
+		printf("Found activity: %s\n", activityName.c_str());
+		std::shared_ptr<sl::core::application::ActivityStack> activityStack(new sl::core::application::ActivityStack());
+		activityStack->push(activityPtr);
+
+		std::unique_ptr<sl::core::application::Application> app(new sl::core::application::Application(activityStack));
+
+		const int exitCode = app->run();
+		return exitCode;
+	}
+
+	printf("Could not find activity: %s\n", activityName.c_str());
+
+	// command line doesn't understand exit codes not in the range 0~255; it will return the exit code % 256.
+	return 1; // can't find the activity in services. we should probably wait a while instead of instantly failing
 }
 
 } /* namespace engine */

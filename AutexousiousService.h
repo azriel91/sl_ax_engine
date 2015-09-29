@@ -22,11 +22,18 @@
 #define __SL_AUTEXOUSIOUS_ENGINE__AUTEXOUSIOUSSERVICE_H
 
 #include <memory>
+#include <string>
 
 #include <azriel/cppmicroservices/core/include/usServiceInterface.h>
+#include <azriel/cppmicroservices/core/include/usServiceTracker.h>
 #include <azriel/sl_core_application/Application.h>
+#include <azriel/sl_core_application/ActivityRegistration.h>
 
 #include "sl_ax_engine/Block.h"
+
+US_USE_NAMESPACE
+
+using sl::core::application::ActivityRegistration;
 
 namespace sl {
 namespace ax {
@@ -34,16 +41,18 @@ namespace engine {
 
 class SL_AX_ENGINE_EXPORT AutexousiousService {
 private:
-	std::unique_ptr<sl::core::application::Application> app;
+	std::shared_ptr<ServiceTracker<ActivityRegistration> > activityRegistrationTracker;
 
 public:
-	AutexousiousService();
+	AutexousiousService(std::shared_ptr<ServiceTracker<ActivityRegistration> > activityRegistrationTracker);
 	virtual ~AutexousiousService();
 
-	const int runApplication();
-
-private:
-	static std::unique_ptr<sl::core::application::Application> createApplication();
+	/**
+	 * Run the application.
+	 *
+	 * @param activityName the unique name of the activity to use as the starting activity
+	 */
+	const int runApplication(const std::string activityName) const;
 };
 
 } /* namespace engine */

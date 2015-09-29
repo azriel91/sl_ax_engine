@@ -25,8 +25,10 @@
 
 #include <azriel/cppmicroservices/core/include/usModuleActivator.h>
 #include <azriel/cppmicroservices/core/include/usModuleContext.h>
+#include <azriel/cppmicroservices/core/include/usServiceTracker.h>
 
 #include "../AutexousiousService.h"
+#include "StartupActivityService.h"
 
 US_USE_NAMESPACE
 
@@ -37,10 +39,13 @@ namespace engine {
 class AutexousiousEngineActivator : public ModuleActivator {
 private:
 	std::unique_ptr<AutexousiousService> autexousiousService;
+	std::unique_ptr<StartupActivityService> startupActivityService;
 
 private:
 	void Load(ModuleContext* context);
 	void Unload(ModuleContext* context);
+
+	AutexousiousService* createAutexousiousService(ModuleContext* context);
 };
 
 } /* namespace engine */

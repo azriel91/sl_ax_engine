@@ -20,30 +20,26 @@
 
 #include <memory>
 
-#include <azriel/sl_core_application/ActivityRegistration.h>
-
-#include "AutexousiousEngineActivator.h"
+#include "StartupActivityService.h"
+#include "StartupActivity.h"
 
 namespace sl {
 namespace ax {
 namespace engine {
 
-void AutexousiousEngineActivator::Load(ModuleContext* context) {
-	this->autexousiousService.reset(createAutexousiousService(context));
-	context->RegisterService<AutexousiousService>(this->autexousiousService.get());
-
-	this->startupActivityService.reset(new StartupActivityService());
-	context->RegisterService<ActivityRegistration>(this->startupActivityService.get());
+StartupActivityService::StartupActivityService() :
+		startupActivity(sl::core::application::ActivityPointer(new sl::ax::engine::StartupActivity())) {
 }
 
-void AutexousiousEngineActivator::Unload(ModuleContext* context) {
-	// services are automatically unregistered
+StartupActivityService::~StartupActivityService() {
 }
 
-AutexousiousService* AutexousiousEngineActivator::createAutexousiousService(ModuleContext* context) {
-	std::shared_ptr<ServiceTracker<ActivityRegistration> > serviceTracker(
-			new ServiceTracker<ActivityRegistration>(context));
-	return new AutexousiousService(serviceTracker);
+std::string StartupActivityService::getName() const {
+	return "sl::ax::engine::StartupActivity";
+}
+
+sl::core::application::ActivityPointer StartupActivityService::getActivity() const {
+	return this->startupActivity;
 }
 
 } /* namespace engine */
